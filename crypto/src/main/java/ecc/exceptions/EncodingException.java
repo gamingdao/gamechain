@@ -14,11 +14,11 @@ package ecc.exceptions;
 
 /** Encoding exception. */
 public class EncodingException extends RuntimeException {
-    public EncodingException(String message) {
-        super(message);
-    }
+	public EncodingException(String message) {
+		super(message);
+	}
 
-    public EncodingException(String message, Throwable cause) {
-        super(message, cause);
-    }
+	public EncodingException(String message, Throwable cause) {
+		super(message, cause);
+	}
 }
