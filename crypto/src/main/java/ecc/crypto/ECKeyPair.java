@@ -152,7 +152,7 @@ public class ECKeyPair {
 	}
 
 	public String getName() {
-		return name == null || name.isBlank() ? null : name.trim();
+		return name == null || name.trim().isEmpty()? null : name.trim();
 	}
 
 	void print(String prefix) {
