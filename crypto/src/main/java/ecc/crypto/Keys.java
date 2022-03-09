@@ -29,128 +29,122 @@ import ecc.util.Hash;
 import ecc.util.Numeric;
 import ecc.util.Strings;
 
-
 /** Crypto key utilities. */
 public class Keys {
 
-    static final int PRIVATE_KEY_SIZE = 32;
-    static final int PUBLIC_KEY_SIZE = 64;
+	static final int PRIVATE_KEY_SIZE = 32;
+	static final int PUBLIC_KEY_SIZE = 64;
 
-    public static final int ADDRESS_SIZE = 160;
-    public static final int ADDRESS_LENGTH_IN_HEX = ADDRESS_SIZE >> 2;
-    static final int PUBLIC_KEY_LENGTH_IN_HEX = PUBLIC_KEY_SIZE << 1;
-    public static final int PRIVATE_KEY_LENGTH_IN_HEX = PRIVATE_KEY_SIZE << 1;
-    private static final SecureRandom RANDOM = new SecureRandom();;
-    
-    static {
-        if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
-            Security.addProvider(new BouncyCastleProvider());
-        }
-    }
+	public static final int ADDRESS_SIZE = 160;
+	public static final int ADDRESS_LENGTH_IN_HEX = ADDRESS_SIZE >> 2;
+	public static final int PUBLIC_KEY_LENGTH_IN_HEX = PUBLIC_KEY_SIZE << 1;
+	public static final int PRIVATE_KEY_LENGTH_IN_HEX = PRIVATE_KEY_SIZE << 1;
+	private static final SecureRandom RANDOM = new SecureRandom();;
 
-    private Keys() {}
+	static {
+		if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
+			Security.addProvider(new BouncyCastleProvider());
+		}
+	}
 
-    /**
-     * Create a keypair using SECP-256k1 curve.
-     *
-     * <p>Private keypairs are encoded using PKCS8
-     *
-     * <p>Private keys are encoded using X.509
-     */
-    static KeyPair createSecp256k1KeyPair()
-            throws NoSuchProviderException, NoSuchAlgorithmException,
-                    InvalidAlgorithmParameterException {
-        return createSecp256k1KeyPair(RANDOM);
-    }
+	private Keys() {
+	}
 
-    static KeyPair createSecp256k1KeyPair(SecureRandom random)
-            throws NoSuchProviderException, NoSuchAlgorithmException,
-                    InvalidAlgorithmParameterException {
+	/**
+	 * Create a keypair using SECP-256k1 curve.
+	 *
+	 * <p>
+	 * Private keypairs are encoded using PKCS8
+	 *
+	 * <p>
+	 * Private keys are encoded using X.509
+	 */
+	static KeyPair createSecp256k1KeyPair() throws NoSuchProviderException, NoSuchAlgorithmException, InvalidAlgorithmParameterException {
+		return createSecp256k1KeyPair(RANDOM);
+	}
 
-        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("ECDSA", "BC");
-        ECGenParameterSpec ecGenParameterSpec = new ECGenParameterSpec("secp256k1");
-        if (random != null) {
-            keyPairGenerator.initialize(ecGenParameterSpec, random);
-        } else {
-            keyPairGenerator.initialize(ecGenParameterSpec);
-        }
-        return keyPairGenerator.generateKeyPair();
-    }
+	static KeyPair createSecp256k1KeyPair(SecureRandom random) throws NoSuchProviderException, NoSuchAlgorithmException, InvalidAlgorithmParameterException {
 
-    public static ECKeyPair createEcKeyPair(String name)
-            throws InvalidAlgorithmParameterException, NoSuchAlgorithmException,
-                    NoSuchProviderException {
-         return ECKeyPair.create(name, createSecp256k1KeyPair(RANDOM));
-    }
+		KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("ECDSA", "BC");
+		ECGenParameterSpec ecGenParameterSpec = new ECGenParameterSpec("secp256k1");
+		if (random != null) {
+			keyPairGenerator.initialize(ecGenParameterSpec, random);
+		} else {
+			keyPairGenerator.initialize(ecGenParameterSpec);
+		}
+		return keyPairGenerator.generateKeyPair();
+	}
 
-    public static String getAddress(ECKeyPair ecKeyPair) {
-        return getAddress(ecKeyPair.getPublicKey());
-    }
+	public static ECKeyPair createEcKeyPair(String name) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException {
+		return ECKeyPair.create(name, createSecp256k1KeyPair(RANDOM));
+	}
 
-    public static String getAddress(BigInteger publicKey) {
-        return getAddress(Numeric.toHexStringNoPrefixZeroPadded(publicKey, PUBLIC_KEY_LENGTH_IN_HEX));
-    }
+	public static String getAddress(ECKeyPair ecKeyPair) {
+		return getAddress(ecKeyPair.getPublicKey());
+	}
 
-    public static String getAddress(String publicKey) {
-        String publicKeyNoPrefix = Numeric.cleanHexPrefix(publicKey);
+	public static String getAddress(BigInteger publicKey) {
+		return getAddress(Numeric.toHexStringNoPrefixZeroPadded(publicKey, PUBLIC_KEY_LENGTH_IN_HEX));
+	}
 
-        if (publicKeyNoPrefix.length() < PUBLIC_KEY_LENGTH_IN_HEX) {
-            publicKeyNoPrefix =
-                    Strings.zeros(PUBLIC_KEY_LENGTH_IN_HEX - publicKeyNoPrefix.length())
-                            + publicKeyNoPrefix;
-        }
-        String hash = Hash.sha3(publicKeyNoPrefix);
-        return hash.substring(hash.length() - ADDRESS_LENGTH_IN_HEX); // right most 160 bits
-    }
+	public static String getAddress(String publicKey) {
+		String publicKeyNoPrefix = Numeric.cleanHexPrefix(publicKey);
 
-    public static byte[] getAddress(byte[] publicKey) {
-        byte[] hash = Hash.sha3(publicKey);
-        return Arrays.copyOfRange(hash, hash.length - 20, hash.length); // right most 160 bits
-    }
+		if (publicKeyNoPrefix.length() < PUBLIC_KEY_LENGTH_IN_HEX) {
+			publicKeyNoPrefix = Strings.zeros(PUBLIC_KEY_LENGTH_IN_HEX - publicKeyNoPrefix.length()) + publicKeyNoPrefix;
+		}
+		String hash = Hash.sha3(publicKeyNoPrefix);
+		return hash.substring(hash.length() - ADDRESS_LENGTH_IN_HEX); // right most 160 bits
+	}
 
-    /**
-     * Checksum address encoding as per <a
-     * href="https://github.com/ethereum/EIPs/blob/master/EIPS/eip-55.md">EIP-55</a>.
-     *
-     * @param address a valid hex encoded address
-     * @return hex encoded checksum address
-     */
-    public static String toChecksumAddress(String address) {
-        String lowercaseAddress = Numeric.cleanHexPrefix(address).toLowerCase();
-        String addressHash = Numeric.cleanHexPrefix(Hash.sha3String(lowercaseAddress));
+	public static byte[] getAddress(byte[] publicKey) {
+		byte[] hash = Hash.sha3(publicKey);
+		return Arrays.copyOfRange(hash, hash.length - 20, hash.length); // right most 160 bits
+	}
 
-        StringBuilder result = new StringBuilder(lowercaseAddress.length() + 2);
+	/**
+	 * Checksum address encoding as per <a href=
+	 * "https://github.com/ethereum/EIPs/blob/master/EIPS/eip-55.md">EIP-55</a>.
+	 *
+	 * @param address a valid hex encoded address
+	 * @return hex encoded checksum address
+	 */
+	public static String toChecksumAddress(String address) {
+		String lowercaseAddress = Numeric.cleanHexPrefix(address).toLowerCase();
+		String addressHash = Numeric.cleanHexPrefix(Hash.sha3String(lowercaseAddress));
 
-        result.append("0x");
+		StringBuilder result = new StringBuilder(lowercaseAddress.length() + 2);
 
-        for (int i = 0; i < lowercaseAddress.length(); i++) {
-            if (Integer.parseInt(String.valueOf(addressHash.charAt(i)), 16) >= 8) {
-                result.append(String.valueOf(lowercaseAddress.charAt(i)).toUpperCase());
-            } else {
-                result.append(lowercaseAddress.charAt(i));
-            }
-        }
+		result.append("0x");
 
-        return result.toString();
-    }
+		for (int i = 0; i < lowercaseAddress.length(); i++) {
+			if (Integer.parseInt(String.valueOf(addressHash.charAt(i)), 16) >= 8) {
+				result.append(String.valueOf(lowercaseAddress.charAt(i)).toUpperCase());
+			} else {
+				result.append(lowercaseAddress.charAt(i));
+			}
+		}
 
-    public static byte[] serialize(ECKeyPair ecKeyPair) {
-        byte[] privateKey = Numeric.toBytesPadded(ecKeyPair.getPrivateKey(), PRIVATE_KEY_SIZE);
-        byte[] publicKey = Numeric.toBytesPadded(ecKeyPair.getPublicKey(), PUBLIC_KEY_SIZE);
+		return result.toString();
+	}
 
-        byte[] result = Arrays.copyOf(privateKey, PRIVATE_KEY_SIZE + PUBLIC_KEY_SIZE);
-        System.arraycopy(publicKey, 0, result, PRIVATE_KEY_SIZE, PUBLIC_KEY_SIZE);
-        return result;
-    }
+	public static byte[] serialize(ECKeyPair ecKeyPair) {
+		byte[] privateKey = Numeric.toBytesPadded(ecKeyPair.getPrivateKey(), PRIVATE_KEY_SIZE);
+		byte[] publicKey = Numeric.toBytesPadded(ecKeyPair.getPublicKey(), PUBLIC_KEY_SIZE);
 
-    public static ECKeyPair deserialize(String name, byte[] input) {
-        if (input.length != PRIVATE_KEY_SIZE + PUBLIC_KEY_SIZE) {
-            throw new RuntimeException("Invalid input key size");
-        }
+		byte[] result = Arrays.copyOf(privateKey, PRIVATE_KEY_SIZE + PUBLIC_KEY_SIZE);
+		System.arraycopy(publicKey, 0, result, PRIVATE_KEY_SIZE, PUBLIC_KEY_SIZE);
+		return result;
+	}
 
-        BigInteger privateKey = Numeric.toBigInt(input, 0, PRIVATE_KEY_SIZE);
-        BigInteger publicKey = Numeric.toBigInt(input, PRIVATE_KEY_SIZE, PUBLIC_KEY_SIZE);
+	public static ECKeyPair deserialize(String name, byte[] input) {
+		if (input.length != PRIVATE_KEY_SIZE + PUBLIC_KEY_SIZE) {
+			throw new RuntimeException("Invalid input key size");
+		}
 
-        return new ECKeyPair(name,privateKey, publicKey,null);
-    }
+		BigInteger privateKey = Numeric.toBigInt(input, 0, PRIVATE_KEY_SIZE);
+		BigInteger publicKey = Numeric.toBigInt(input, PRIVATE_KEY_SIZE, PUBLIC_KEY_SIZE);
+
+		return new ECKeyPair(name, privateKey, publicKey, null);
+	}
 }
