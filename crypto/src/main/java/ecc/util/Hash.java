@@ -13,8 +13,13 @@
 package ecc.util;
 
 import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
+import javax.crypto.Mac;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.bouncycastle.crypto.digests.RIPEMD160Digest;
 import org.bouncycastle.crypto.digests.SHA256Digest;
@@ -126,6 +131,15 @@ public class Hash {
 		hMac.doFinal(out, 0);
 		return out;
 	}
+	
+	
+    public static byte[] hmac(byte[] key, byte[] data, String algorithm) throws GeneralSecurityException {
+    	SecretKey salt = new SecretKeySpec(key, algorithm);
+        Mac mac = Mac.getInstance(salt.getAlgorithm());
+		mac.init(salt);
+        return mac.doFinal(data);
+    }
+
 
 	public static byte[] sha256hash160(byte[] input) {
 		byte[] sha256 = sha256(input);

@@ -23,6 +23,8 @@ import java.security.Security;
 import java.security.spec.ECGenParameterSpec;
 import java.util.Arrays;
 
+import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPrivateKey;
+import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import ecc.util.Hash;
@@ -73,10 +75,6 @@ public class Keys {
 			keyPairGenerator.initialize(ecGenParameterSpec);
 		}
 		return keyPairGenerator.generateKeyPair();
-	}
-
-	public static ECKeyPair createEcKeyPair(String name) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException {
-		return ECKeyPair.create(name, createSecp256k1KeyPair(RANDOM));
 	}
 
 	public static String getAddress(ECKeyPair ecKeyPair) {
@@ -137,7 +135,7 @@ public class Keys {
 		return result;
 	}
 
-	public static ECKeyPair deserialize(String name, byte[] input) {
+	public static ECKeyPair deserialize(byte[] input) {
 		if (input.length != PRIVATE_KEY_SIZE + PUBLIC_KEY_SIZE) {
 			throw new RuntimeException("Invalid input key size");
 		}
@@ -145,6 +143,28 @@ public class Keys {
 		BigInteger privateKey = Numeric.toBigInt(input, 0, PRIVATE_KEY_SIZE);
 		BigInteger publicKey = Numeric.toBigInt(input, PRIVATE_KEY_SIZE, PUBLIC_KEY_SIZE);
 
-		return new ECKeyPair(name, privateKey, publicKey, null);
+		return new ECKeyPair(privateKey, publicKey);
 	}
+
+	public static ECKeyPair createEcKeyPair() throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException {
+		return create(createSecp256k1KeyPair(RANDOM));
+	}
+	
+	public static ECKeyPair create(KeyPair keyPair) {
+		BCECPrivateKey priKey = (BCECPrivateKey) keyPair.getPrivate();
+
+		BigInteger privateValue = priKey.getD();
+
+		// Ethereum does not use encoded public keys like bitcoin - see
+		// https://en.bitcoin.it/wiki/Elliptic_Curve_Digital_Signature_Algorithm for
+		// details
+		// Additionally, as the first bit is a constant prefix (0x04) we ignore this
+		// value
+		BCECPublicKey pubKey = (BCECPublicKey) keyPair.getPublic();
+		byte[] publicBytes = pubKey.getQ().getEncoded(false);
+		BigInteger publicValue = new BigInteger(1, Arrays.copyOfRange(publicBytes, 1, publicBytes.length));
+
+		return new ECKeyPair(privateValue, publicValue);
+	}
+
 }
