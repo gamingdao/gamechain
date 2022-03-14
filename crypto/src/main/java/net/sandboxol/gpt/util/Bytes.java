@@ -1,4 +1,4 @@
-package ecc.util;
+package net.sandboxol.gpt.util;
 
 import java.nio.ByteBuffer;
 import java.util.Date;

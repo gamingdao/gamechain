@@ -1,6 +1,6 @@
-package ecc.crypto;
+package net.sandboxol.gpt.crypto;
 
-import static ecc.util.CurveConstant.CURVE;
+import static net.sandboxol.gpt.util.CurveConstant.CURVE;
 
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -15,10 +15,10 @@ import org.bouncycastle.crypto.signers.HMacDSAKCalculator;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.math.ec.FixedPointCombMultiplier;
 
-import ecc.util.Hash;
-import ecc.util.Numeric;
-import ecc.util.Sign;
-import ecc.util.SignData;
+import net.sandboxol.gpt.util.Hash;
+import net.sandboxol.gpt.util.Numeric;
+import net.sandboxol.gpt.util.Sign;
+import net.sandboxol.gpt.util.SignData;
 
 /** Elliptic Curve SECP-256k1 generated key pair. */
 public class ECKeyPair {

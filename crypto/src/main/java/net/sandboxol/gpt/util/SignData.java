@@ -1,4 +1,4 @@
-package ecc.util;
+package net.sandboxol.gpt.util;
 
 import static org.bouncycastle.util.BigIntegers.TWO;
 
@@ -6,7 +6,7 @@ import java.math.BigInteger;
 import java.security.SignatureException;
 import java.util.Arrays;
 
-import ecc.crypto.Keys;
+import net.sandboxol.gpt.crypto.Keys;
 
 
 public class SignData {

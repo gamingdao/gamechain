@@ -1,7 +1,8 @@
-package ecc.crypto;
+package net.sandboxol.gpt.crypto;
 
-import ecc.util.Hash;
-import ecc.util.Numeric;
+import net.sandboxol.gpt.crypto.ECKeyPair;
+import net.sandboxol.gpt.util.Hash;
+import net.sandboxol.gpt.util.Numeric;
 
 public class TestKeys {
 
@@ -15,7 +16,7 @@ public class TestKeys {
 		for(int j=0;j<100;j++) {
 			System.out.println(j+":"+System.currentTimeMillis()/1000);
 			for(int i=0;i<10_000_000;i++) {
-				ECKeyPair.create(i+"."+j, "zheng").print("0x00000");;
+				ECKeyPair.create(i+"."+j, "zheng").print("0x000000");;
 			}
 		}		
 	}

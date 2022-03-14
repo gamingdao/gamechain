@@ -1,4 +1,4 @@
-package ecc.crypto;
+package net.sandboxol.gpt.crypto;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -6,9 +6,9 @@ import java.util.HashMap;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
-import ecc.util.Digester;
-import ecc.util.HashFields;
-import ecc.util.Numeric;
+import net.sandboxol.gpt.util.Digester;
+import net.sandboxol.gpt.util.HashFields;
+import net.sandboxol.gpt.util.Numeric;
 
 public class Json implements HashFields {
 	

@@ -10,7 +10,7 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package ecc.crypto;
+package net.sandboxol.gpt.crypto;
 
 import java.math.BigInteger;
 import java.security.InvalidAlgorithmParameterException;
@@ -27,9 +27,9 @@ import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPrivateKey;
 import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
-import ecc.util.Hash;
-import ecc.util.Numeric;
-import ecc.util.Strings;
+import net.sandboxol.gpt.util.Hash;
+import net.sandboxol.gpt.util.Numeric;
+import net.sandboxol.gpt.util.Strings;
 
 /** Crypto key utilities. */
 public class Keys {

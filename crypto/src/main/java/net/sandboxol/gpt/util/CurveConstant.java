@@ -25,7 +25,7 @@ G =(x,y); G的阶为n
 P = 2^256-2^32-977=2^256-2^32-2^10+2^5+2^4-1
     
  */
-package ecc.util;
+package net.sandboxol.gpt.util;
 
 import java.math.BigInteger;
 

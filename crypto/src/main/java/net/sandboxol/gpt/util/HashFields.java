@@ -1,4 +1,4 @@
-package ecc.util;
+package net.sandboxol.gpt.util;
 
 import java.util.HashSet;
 import java.util.Set;
