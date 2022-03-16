@@ -12,6 +12,8 @@
  */
 package net.sandboxol.gpt.util;
 
+import static net.sandboxol.gpt.util.ECConstant.HEX_PREFIX;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -27,8 +29,6 @@ import net.sandboxol.gpt.exceptions.EncodingException;
  * https://github.com/ethereum/wiki/wiki/JSON-RPC#hex-value-encoding
  */
 public final class Numeric {
-
-	private static final String HEX_PREFIX = "0x";
 	private static final char[] HEX_CHAR_MAP = "0123456789abcdef".toCharArray();
 
 	private Numeric() {

@@ -53,7 +53,7 @@ public class KeysTool {
 	}
 
 	public static String getAddr(byte[] hash, String sign) {
-		return Address.from(hash, sign);
+		return Address.toChecksum(Address.from(hash,sign));
 	}
 
 	

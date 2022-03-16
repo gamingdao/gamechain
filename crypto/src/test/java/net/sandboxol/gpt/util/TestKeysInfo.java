@@ -26,26 +26,8 @@ public class TestKeysInfo {
 		String name= "df6yyf";
 		byte[] b= Hash.hmacSha256(name.getBytes(), name.getBytes());
 		System.out.println(Numeric.toHexString(b));
-		hex2Oct(b);
+		b=KeysInfo.oct(b);
 		System.out.println(Numeric.toHexString(b));
-	}
-
-
-	
-
-	static final void hex2Oct(byte[] hex) {
-		for (int i = 0; i < hex.length; i++) {
-			hex[i] = (byte)(oct(hex[i]>>4)<<4 | oct(hex[i]));
-		}
-	}
-	
-	static final byte oct(int src) {
-		//01234567 ->81239567
-		int oct = src & 7;
-		if (oct == 0 || oct == 4) {
-			oct = oct >> 2 | 1 << 3;
-		}
-		return (byte)oct;
 	}
 
 	static void print(KeysInfo ki, String prefix) {

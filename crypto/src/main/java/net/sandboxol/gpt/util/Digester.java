@@ -17,10 +17,7 @@ import java.util.Map.Entry;
  * jwt using:{@link com.fasterxml.jackson.databind.ObjectMapper#writeValueAsBytes(Object)})
  * 
  */
-public final class Digester  {
-	private static final String HASH = "MD5";//SHA-1, SHA-256,SHA3-256
-	private static final String HMAC = "HmacMD5";// "HmacSHA1";//"HmacMD5"
-
+public final class Digester implements ECConstant {
     
     /**
      * @param obj to digest/hash

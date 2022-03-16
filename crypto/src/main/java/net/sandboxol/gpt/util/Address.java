@@ -3,10 +3,11 @@ package net.sandboxol.gpt.util;
 import java.math.BigInteger;
 import java.util.Arrays;
 
-public class Address {
-	public static final String HEX_PREFIX = "0x";
-	public static final int ADDRESS_BITS = 160;
-	public static final int PUBLIC_BITS = 512;
+public class Address implements ECConstant {
+
+	public static String from(byte[] hash, String sign) {
+		return from(new SignData(hash,sign).recoverPublicKey());
+	}
 	
 	public static String from(BigInteger publicKey) {
 		if(publicKey==null) {return null;}
@@ -26,10 +27,6 @@ public class Address {
 	public static byte[] from(byte[] publicKey) {
 		byte[] hash = Hash.sha3(publicKey);
 		return Arrays.copyOfRange(hash, hash.length - (ADDRESS_BITS>>3), hash.length); // right most 160 bits
-	}
-
-	public static String from(byte[] hash, String sign) {
-		return from(new SignData(hash,sign).recoverPublicKey());
 	}
 
 	/**

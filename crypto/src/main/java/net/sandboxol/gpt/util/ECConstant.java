@@ -34,7 +34,11 @@ import org.bouncycastle.crypto.ec.CustomNamedCurves;
 import org.bouncycastle.crypto.params.ECDomainParameters;
 
 public interface ECConstant {
-
+	public static final int ADDRESS_BITS = 160;
+	public static final int PUBLIC_BITS = 512;	
+	public static final String HASH = "MD5";//SHA-1, SHA-256,SHA3-256
+	public static final String HMAC = "HmacMD5";// "HmacSHA1";//"HmacMD5"
+	public static final String HEX_PREFIX = "0x";
 	final X9ECParameters CURVE_PARAMS = CustomNamedCurves.getByName("secp256k1");
 	final ECDomainParameters CURVE = new ECDomainParameters(CURVE_PARAMS.getCurve(), CURVE_PARAMS.getG(), CURVE_PARAMS.getN(), CURVE_PARAMS.getH());
 	final BigInteger HALF_CURVE_ORDER = CURVE.getN().shiftRight(1);

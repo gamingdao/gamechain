@@ -23,8 +23,8 @@ public class SignData {
 	public SignData(byte v, BigInteger R, BigInteger S, byte[] hash) {
 		this.h = hash;
 		this.v = v;
-		this.r = R.toByteArray();//Numeric.toBytesPadded(R, 32);
-		this.s = S.toByteArray();
+		this.r = Numeric.toBytesPadded(R, 32);//R.toByteArray();
+		this.s = Numeric.toBytesPadded(S, 32);//S.toByteArray();
 		this.R = R;
 		this.S = S;
 	}

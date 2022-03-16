@@ -34,9 +34,9 @@ public final class KeysInfo implements ECConstants,ECConstant {
 		this.initialize();
 	}
 
-	public KeysInfo(String name, KeysInfo parent) {
+	public KeysInfo(String name, KeysInfo group) {
 		this.name=name;
-		this.parent=parent;
+		this.parent=group;
 		this.initialize();
 	}
 
@@ -49,8 +49,8 @@ public final class KeysInfo implements ECConstants,ECConstant {
 		return this.parent;
 	}
 	
-	public KeysInfo getChild(String subName){
-		return new KeysInfo(subName,this);
+	public KeysInfo getChild(String child){
+		return new KeysInfo(child,this);
 	}	
 	
 	public String getName() {
@@ -132,6 +132,7 @@ public final class KeysInfo implements ECConstants,ECConstant {
 	 * @return seed BigInteger as private seed 
 	 */
 	public static BigInteger generateKey(String name, byte[] seed){
+		//if(useOct){ return generateOctKey()}
 		byte[] salt = name.getBytes();
 		byte[] data = seed;
 		BigInteger N = CURVE.getN();
@@ -142,6 +143,18 @@ public final class KeysInfo implements ECConstants,ECConstant {
 			if(d.compareTo(ZERO)<0||(d.compareTo(N)>0)) {
 				d = d.mod(N);
 			}
+		}while(!verifyNafWeight(d));
+		return d;		
+	}
+	
+	public static BigInteger generateOctKey(String name, byte[] seed){
+		byte[] salt = name.getBytes();
+		byte[] data = seed;
+		BigInteger d = null;
+		do{
+			data = Hash.hmacSha256(salt, data);
+			d =  Numeric.toBigInt(oct(data));
+			//d always >0 and <N;
 		}while(!verifyNafWeight(d));
 		return d;		
 	}
@@ -171,6 +184,22 @@ public final class KeysInfo implements ECConstants,ECConstant {
         return diff.bitCount()>STRENTH;
      }
     
+	static final byte[] oct(byte[] src) {
+		byte[] ret = new byte[src.length];
+		for (int i = 0; i < src.length; i++) {
+			ret[i] = (byte)(oct(src[i]>>4)<<4 | oct(src[i]));
+		}
+		return ret;
+	}
+	
+	static final byte oct(int src) {
+		//01234567 ->81239567
+		int ret = src & 7;
+		if (ret == 0 || ret == 4) {
+			ret = ret >> 2 | 1 << 3;
+		}
+		return (byte)ret;
+	}
 
 	/**
 	 * Returns public key from the given private key.
