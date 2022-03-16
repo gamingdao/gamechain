@@ -19,7 +19,7 @@ import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.math.ec.FixedPointCombMultiplier;
 
 public final class KeysInfo implements ECConstants,ECConstant {
-	private static final int STRENTH = CURVE.getN().bitLength()>>>2;
+	private static final int STRENTH = CURVE.getN().bitLength()>>>2; // set 1/4; best is 1/3;
 	private static final ProviderConfiguration BCCONF = BouncyCastleProvider.CONFIGURATION;
 	private KeysInfo parent;
 	private KeyPair keys;
@@ -134,20 +134,16 @@ public final class KeysInfo implements ECConstants,ECConstant {
 	public static BigInteger generateKey(String name, byte[] seed){
 		byte[] salt = name.getBytes();
 		byte[] data = seed;
-		BigInteger N =CURVE.getN();
+		BigInteger N = CURVE.getN();
 		BigInteger d = ZERO;
-		do {
+		do{
 			data = Hash.hmacSha256(salt, data);
 			d =  Numeric.toBigInt(data);
 			if(d.compareTo(ZERO)<0||(d.compareTo(N)>0)) {
-				d = d.mod(CURVE.getN());
+				d = d.mod(N);
 			}
-		}while(verifyNafWeight(d));
-		
-		//if (keyIsOct){hex2Oct(d);} 
-		// return new BigInteger(1,Arrays.copyOfRange(hmac, 0, 32));
+		}while(!verifyNafWeight(d));
 		return d;		
-
 	}
 	
 	/**
