@@ -52,6 +52,10 @@ public class KeysTool {
 		return SignTool.verify(hash, sign);
 	}
 
+	public static String getAddr(byte[] hash, String sign) {
+		return Address.from(hash, sign);
+	}
+
 	
 
 }

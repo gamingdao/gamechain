@@ -44,8 +44,16 @@ public class KeysHolder {
 		return setAndReturn(ROOT,new KeysInfo(ROOT));
 	}
 	
+	public static void setRoot(java.security.KeyPair kp) {
+		CACHE.clear();
+		CACHE.put(ROOT,new KeysInfo(ROOT,kp));
+	}
+	
+	
 	private static KeysInfo setAndReturn(String name, KeysInfo keyGen) {
 		CACHE.put(name,keyGen);
 		return keyGen;
 	}
+
+	
 }

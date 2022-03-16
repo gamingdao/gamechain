@@ -9,22 +9,27 @@ public class Address {
 	public static final int PUBLIC_BITS = 512;
 	
 	public static String from(BigInteger publicKey) {
+		if(publicKey==null) {return null;}
 		return from(Numeric.toHexStringNoPrefixZeroPadded(publicKey, PUBLIC_BITS>>2));
 	}
 
 	public static String from(String publicKey) {
-		String publicKeyNoPrefix = Numeric.cleanHexPrefix(publicKey);
-		if (publicKeyNoPrefix.length() < PUBLIC_BITS>>2) {
-			publicKeyNoPrefix = Strings.zeros((PUBLIC_BITS>>2)-publicKeyNoPrefix.length()) + publicKeyNoPrefix;
+		String keyNoPrefix = Numeric.cleanHexPrefix(publicKey);
+		if (keyNoPrefix.length() < PUBLIC_BITS>>2) {
+			keyNoPrefix = Strings.zeros((PUBLIC_BITS>>2)-keyNoPrefix.length()) + keyNoPrefix;
 			//TODO check: need add prefix 0?
 		}
-		String hash = Hash.sha3(publicKeyNoPrefix);
+		String hash = Hash.sha3(keyNoPrefix);
 		return HEX_PREFIX+hash.substring(hash.length() - (ADDRESS_BITS>>2)); // right most 160 bits
 	}
 
 	public static byte[] from(byte[] publicKey) {
 		byte[] hash = Hash.sha3(publicKey);
 		return Arrays.copyOfRange(hash, hash.length - (ADDRESS_BITS>>3), hash.length); // right most 160 bits
+	}
+
+	public static String from(byte[] hash, String sign) {
+		return from(new SignData(hash,sign).recoverPublicKey());
 	}
 
 	/**
