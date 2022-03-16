@@ -20,6 +20,11 @@ import java.security.SignatureException;
 import java.util.Arrays;
 
 import org.bouncycastle.asn1.x9.X9IntegerConverter;
+import org.bouncycastle.crypto.digests.SHA256Digest;
+import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
+import org.bouncycastle.crypto.params.ECPublicKeyParameters;
+import org.bouncycastle.crypto.signers.ECDSASigner;
+import org.bouncycastle.crypto.signers.HMacDSAKCalculator;
 import org.bouncycastle.math.ec.ECAlgorithms;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.math.ec.FixedPointCombMultiplier;
@@ -31,7 +36,7 @@ import org.bouncycastle.math.ec.custom.sec.SecP256K1Curve;
  * <p>
  * Adapted from the <a href="https://github.com/bitcoinj/bitcoinj/blob/master/core/src/main/java/org/bitcoinj/core/ECKey.java"> BitcoinJ ECKey</a> implementation.
  */
-public class Sign {
+public class SignTool {
 	static final String MESSAGE_PREFIX = "\u0019Ethereum Signed Message:\n";
 
 	static byte[] getEthereumMessagePrefix(int messageLength) {
@@ -267,7 +272,7 @@ public class Sign {
 	 * This is required because for every signature (r,s) the signature (r, -s (mod N)) is a valid signature of the same message.
 	 * However, we dislike the ability to modify the bits of a Bitcoin transaction after it's been signed, as that violates various assumed invariants. 
 	 * Thus in future only one of those forms will be considered legal and the other will be banned.
-	 *{@link Sign#HALF_CURVE_ORDER}. See <a href="https://github.com/bitcoin/bips/blob/master/bip-0062.mediawiki#Low_S_values_in_signatures">BIP62</a>.
+	 *{@link SignTool#HALF_CURVE_ORDER}. See <a href="https://github.com/bitcoin/bips/blob/master/bip-0062.mediawiki#Low_S_values_in_signatures">BIP62</a>.
 	 * @return the BigInteger in a canonicalised form.
 	 */
 	public static BigInteger canonicalize(BigInteger s) {
@@ -279,4 +284,44 @@ public class Sign {
 		return s;
 		
 	}
+	
+	/**
+	 * SignTool a message with the private key of this key pair.
+	 *
+	 * @param data the data need to sign
+	 * @param needHash boolean true will Hash.sha3(data), false if the data NO need hash again
+	 * @return An BigInteger[r,s] of the hash
+	 */
+	public String sign(KeysInfo ki, byte[] data, boolean needHash) {
+		byte[] hash = needHash? Hash.sha3(data):data;
+		return sign(hash,ki).getEtherEncode();
+	}
+	
+	/**
+	 * SignTool a hash with the private key of this key pair.
+	 *
+	 * @param hash the hash data need to sign
+	 * @return SignatureData with r,s,v
+	 */
+	public static SignData sign(byte[] hash, KeysInfo ki) {
+		ECDSASigner signer = new ECDSASigner(new HMacDSAKCalculator(new SHA256Digest()));
+		signer.init(true,  new ECPrivateKeyParameters(ki.getPrivate(),CURVE));		
+		BigInteger[] sign = signer.generateSignature(hash);		
+		return createSignatureData(sign[0],sign[1], ki.getPublic(), hash);
+	}
+	
+	public static boolean verify(byte[] hash, String sign) {
+		byte[] bytes = Numeric.hexStringToByteArray(sign);
+		if(bytes.length!=65) {return false;}
+		int recId = bytes[0]-27;
+		BigInteger sigR = Numeric.toBigInt(bytes, 1, 32);
+		BigInteger sigS = Numeric.toBigInt(bytes, 33, 32);
+		ECPoint q = recoverPublicPoint(recId, sigR, sigS, hash);
+		ECPublicKeyParameters pubKey = new ECPublicKeyParameters(q, CURVE);
+
+		ECDSASigner signer = new ECDSASigner(new HMacDSAKCalculator(new SHA256Digest()));
+		signer.init(false, pubKey);		
+		return signer.verifySignature(hash,sigR,sigS);		
+	}
+
 }

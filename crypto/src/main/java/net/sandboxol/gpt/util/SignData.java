@@ -78,7 +78,7 @@ public class SignData {
 		byte[] encodedTransaction = null;// getEncodedTransaction(getChainId());
 		BigInteger v = Numeric.toBigInt(getV());
 		SignData signatureDataV = new SignData(getRealV(v), getR(), getS());
-		BigInteger key = Sign.signedMessageToKey(encodedTransaction, signatureDataV);
+		BigInteger key = SignTool.signedMessageToKey(encodedTransaction, signatureDataV);
 		return "0x" + Address.from(key);
 	}
 

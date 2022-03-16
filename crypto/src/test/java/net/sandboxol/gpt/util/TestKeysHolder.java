@@ -8,10 +8,10 @@ public class TestKeysHolder {
 	}
 	
 	private static void test1() {
-		KeysHolder root = new KeysHolder("ZHENG");
+		KeysInfo root = new KeysInfo("ZHENG");
 		for(int j=0;j<100;j++) {
 			System.out.println(j+":"+System.currentTimeMillis()/1000);
-			KeysHolder kh = root.getChild(Integer.toString(j));
+			KeysInfo kh = root.getChild(Integer.toString(j));
 			for(int i=0;i<10_000_000;i++) {
 				print(kh.getChild(Integer.toString(i)),"0x0");//"0x000000");
 			}
@@ -44,7 +44,7 @@ public class TestKeysHolder {
 		return (byte)oct;
 	}
 
-	private static void print(KeysHolder ckh, String prefix) {
+	private static void print(KeysInfo ckh, String prefix) {
 		String addr = Address.from(ckh.getPublic());
 		if (allIsOct(addr)) {
 			System.out.println("All is OctNumber: ");

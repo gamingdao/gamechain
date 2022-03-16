@@ -8,10 +8,9 @@ import com.alibaba.fastjson.JSONObject;
 
 import net.sandboxol.gpt.util.Digester;
 import net.sandboxol.gpt.util.HashFields;
-import net.sandboxol.gpt.util.KeysHolder;
 import net.sandboxol.gpt.util.Numeric;
 
-public class Json implements HashFields {
+public class JsonTool implements HashFields {
 	
 	public static boolean verify(String json) {
 		JSONObject objJSON = JSON.parseObject(json);//root should be map,not array
@@ -28,7 +27,7 @@ public class Json implements HashFields {
 			System.out.println(strHash+" hash is diffrent with real: "+Numeric.toHexString(digest));
 			return false;
 		}
-		if(!KeysHolder.verify(digest, strSign)) {
+		if(!KeysTool.verify(digest, strSign)) {
 			System.out.println(strSign+" sign is diffrent with real: "+strSign);
 			return false;
 		}

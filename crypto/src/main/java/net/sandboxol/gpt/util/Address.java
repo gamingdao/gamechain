@@ -3,22 +3,10 @@ package net.sandboxol.gpt.util;
 import java.math.BigInteger;
 import java.util.Arrays;
 
-import net.sandboxol.gpt.crypto.KeysInfo;
-
 public class Address {
 	public static final String HEX_PREFIX = "0x";
 	public static final int ADDRESS_BITS = 160;
 	public static final int PUBLIC_BITS = 512;
-
-	/**
-	 * @param name
-	 * @param parent
-	 * @return KeysHolder for the name
-	 */
-	public static String from(String name,String parent) {	
-		KeysHolder ki = KeysInfo.get(name, parent);
-		return from(ki.getPublic());
-	}
 	
 	public static String from(BigInteger publicKey) {
 		return from(Numeric.toHexStringNoPrefixZeroPadded(publicKey, PUBLIC_BITS>>2));
