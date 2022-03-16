@@ -8,6 +8,7 @@ import com.alibaba.fastjson.JSONObject;
 
 import net.sandboxol.gpt.util.Digester;
 import net.sandboxol.gpt.util.HashFields;
+import net.sandboxol.gpt.util.KeysHolder;
 import net.sandboxol.gpt.util.Numeric;
 
 public class Json implements HashFields {
@@ -21,16 +22,13 @@ public class Json implements HashFields {
 		}
 		
 		byte[]  digest = Digester.digest(objJSON);
-		String strHash = objJSON.getString(HASH_FIELD);
-		
+		String strHash = objJSON.getString(HASH_FIELD);		
 		byte[] digHash = Numeric.hexStringToByteArray(strHash);
-		if(!Arrays.equals(digHash, digest)) {
-			System.out.println(strHash+" hash is diffrent with real: "+Numeric.toHexString(digHash));
+		if(!Arrays.equals(digHash,digest)) {
+			System.out.println(strHash+" hash is diffrent with real: "+Numeric.toHexString(digest));
 			return false;
 		}
-		
-		ECKeyPair.verify(digest, strSign);
-		if(!ECKeyPair.verify(digest, strSign)) {
+		if(!KeysHolder.verify(digest, strSign)) {
 			System.out.println(strSign+" sign is diffrent with real: "+strSign);
 			return false;
 		}

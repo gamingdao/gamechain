@@ -13,14 +13,13 @@
 package net.sandboxol.gpt.util;
 
 import static net.sandboxol.gpt.util.Assertions.verifyPrecondition;
-import static net.sandboxol.gpt.util.CurveConstant.CURVE;
+import static net.sandboxol.gpt.util.ECConstant.CURVE;
 
 import java.math.BigInteger;
 import java.security.SignatureException;
 import java.util.Arrays;
 
 import org.bouncycastle.asn1.x9.X9IntegerConverter;
-import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 import org.bouncycastle.math.ec.ECAlgorithms;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.math.ec.FixedPointCombMultiplier;
@@ -272,10 +271,10 @@ public class Sign {
 	 * @return the BigInteger in a canonicalised form.
 	 */
 	public static BigInteger canonicalize(BigInteger s) {
-		if(s.compareTo(CurveConstant.HALF_CURVE_ORDER)>0) {
+		if(s.compareTo(ECConstant.HALF_CURVE_ORDER)>0) {
 			// The order of the curve is the number of valid points that exist on that curve. If S is in the upper half of the number of valid points, then bring it back to the lower half. 
 			// Otherwise, imagine that N = 10, s = 8, so (-8 % 10 == 2) thus both (r, 8) and (r, 2) are valid solutions. 10 - 8 == 2, giving us always the latter solution, which is canonical.
-			return CurveConstant.CURVE.getN().subtract(s);
+			return ECConstant.CURVE.getN().subtract(s);
 		}
 		return s;
 		

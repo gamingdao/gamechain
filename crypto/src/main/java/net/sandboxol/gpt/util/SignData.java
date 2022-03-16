@@ -6,8 +6,6 @@ import java.math.BigInteger;
 import java.security.SignatureException;
 import java.util.Arrays;
 
-import net.sandboxol.gpt.crypto.Keys;
-
 
 public class SignData {
 	private final byte[] v;
@@ -81,7 +79,7 @@ public class SignData {
 		BigInteger v = Numeric.toBigInt(getV());
 		SignData signatureDataV = new SignData(getRealV(v), getR(), getS());
 		BigInteger key = Sign.signedMessageToKey(encodedTransaction, signatureDataV);
-		return "0x" + Keys.getAddress(key);
+		return "0x" + Address.from(key);
 	}
 
 
