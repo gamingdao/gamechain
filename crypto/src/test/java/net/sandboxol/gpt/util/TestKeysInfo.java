@@ -8,15 +8,16 @@ public class TestKeysInfo {
 
 
 	public static void main(String[] args) {
-		test1();
+		test1(true);
 	}
 	
-	static void test1() {
-		KeysInfo root = new KeysInfo("ZHENG");
+	static void test1(boolean useOct) {
+		KeysNode.useOct=useOct;
+		KeysNode root = new KeysNode("Sandbox");
 		for(int j=0;j<100;j++) {
 			System.out.println(j+":"+System.currentTimeMillis()/1000);
-			KeysInfo kh = root.getChild(Integer.toString(j));
-			for(int i=0;i<10_000_000;i++) {
+			KeysNode kh = root.getChild(Integer.toString(j));
+			for(int i=0;i<10_000_0;i++) {
 				print(kh.getChild(Integer.toString(i)),"0x0000");//"0x000000");
 			}
 		}		
@@ -26,15 +27,15 @@ public class TestKeysInfo {
 		String name= "df6yyf";
 		byte[] b= Hash.hmacSha256(name.getBytes(), name.getBytes());
 		System.out.println(Numeric.toHexString(b));
-		b=KeysInfo.oct(b);
+		b=KeysNode.oct(b);
 		System.out.println(Numeric.toHexString(b));
 	}
 
-	static void print(KeysInfo ki, String prefix) {
+	static void print(KeysNode ki, String prefix) {
 		String addr = Address.from(ki.getPublic());
 		if (allIsOct(addr)) {
 			System.out.println("All is OctNumber: ");
-		} else if (!addr.startsWith(prefix == null ? "0x0" : prefix)) {
+		} else if (!addr.startsWith(prefix == null ? "0x00" : prefix)) {
 			return;
 		}
 		StringBuilder sb = new StringBuilder(); 
@@ -42,7 +43,7 @@ public class TestKeysInfo {
 		sb.append("PUBKEY:").append(Numeric.toHexStringWithPrefixSafe(ki.getPublic())).append(';');
 		sb.append("PRIKEY:").append(Numeric.toHexStringWithPrefixSafe(ki.getPrivate())).append(';');
 		sb.append("QName:").append(ki.getQName()).append(';');
-		//sb.append(loopedTimes(ki));
+		sb.append(loopedTimes(ki));
 		System.out.println(sb.toString());
 	}
 
@@ -57,22 +58,26 @@ public class TestKeysInfo {
 		return true;
 	}
 	
-	static int loopedTimes(KeysInfo ki) {		
+	static int loopedTimes(KeysNode ki) {		
 		byte[] salt = ki.getName().getBytes();
 		byte[] data = ki.getParent().getPrivate().toByteArray();
-		BigInteger N =ECConstant.CURVE.getN();
+		BigInteger N = ECConstant.CURVE.getN();
 		BigInteger d = ECConstants.ZERO;
 		int i=0;
 		for(;;) {
 			data = Hash.hmacSha256(salt, data);
-			d =  Numeric.toBigInt(data);
-			i &= -1;
-			if(d.compareTo(ECConstants.ZERO)<0||(d.compareTo(N)>0)) {
-				d = d.mod(N);
-				i|= 1;
-				System.out.println("d is out of range:"+d);
+			if(KeysNode.useOct) {
+				d =  Numeric.toBigInt(KeysNode.oct(data));
+			}else {
+				d =  Numeric.toBigInt(data);
+				i &= -2;
+				if(d.compareTo(ECConstants.ZERO)<0||(d.compareTo(N)>0)) {
+					d = d.mod(N);
+					i|= 1;
+					System.out.println("d is out of range:"+d);
+				}
 			}
-			if(KeysInfo.verifyNafWeight(d)){break;}
+			if(KeysNode.verifyNafWeight(d)){break;}
 			i+=2;
 		}	
 		if(d.compareTo(ki.getPrivate())!=0){

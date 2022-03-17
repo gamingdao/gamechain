@@ -8,7 +8,7 @@ import net.sandboxol.gpt.crypto.KeysTool;
 
 public class TestSignTool {
 	
-	private static KeysTool kt = new KeysTool("harry","net.sandboxol");
+	private static KeysTool kt = new KeysTool("kejun","sandboxol");
 
 	public static void main(String[] args) {
 		test1();
@@ -63,7 +63,7 @@ public class TestSignTool {
 	}
 	
 	static String testAddr(byte[] hash, String sign) {
-		String addr = KeysTool.getAddr(hash,sign);
+		String addr = KeysTool.getAddress(hash,sign);
 		System.out.println("addr:"+addr);
 		return addr;
 	}

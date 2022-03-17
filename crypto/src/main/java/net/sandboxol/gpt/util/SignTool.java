@@ -169,7 +169,7 @@ public class SignTool {
 	 * @param needHash boolean true will Hash.sha3(data), false if the data NO need hash again
 	 * @return An BigInteger[r,s] of the hash
 	 */
-	public static String sign(KeysInfo ki, byte[] data, boolean needHash) {
+	public static String sign(KeysNode ki, byte[] data, boolean needHash) {
 		byte[] hash = needHash? Hash.sha3(data):data;
 		return sign(hash,ki).getEtherEncode();
 	}
@@ -180,7 +180,7 @@ public class SignTool {
 	 * @param hash the hash data need to sign
 	 * @return SignatureData with r,s,v
 	 */
-	public static SignData sign(byte[] hash, KeysInfo ki) {
+	public static SignData sign(byte[] hash, KeysNode ki) {
 		ECDSASigner signer = new ECDSASigner(new HMacDSAKCalculator(new SHA256Digest()));
 		signer.init(true,  new ECPrivateKeyParameters(ki.getPrivate(),CURVE));		
 		BigInteger[] sign = signer.generateSignature(hash);		

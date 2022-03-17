@@ -5,12 +5,12 @@ import java.math.BigInteger;
 import net.sandboxol.gpt.util.Address;
 import net.sandboxol.gpt.util.Hash;
 import net.sandboxol.gpt.util.KeysHolder;
-import net.sandboxol.gpt.util.KeysInfo;
+import net.sandboxol.gpt.util.KeysNode;
 import net.sandboxol.gpt.util.SignData;
 import net.sandboxol.gpt.util.SignTool;
 
 public class KeysTool {
-	private KeysInfo keys;
+	private KeysNode keys;
 	
 	public KeysTool(String childName, String groupName) {
 		this.keys = KeysHolder.get(childName, groupName);
@@ -52,7 +52,7 @@ public class KeysTool {
 		return SignTool.verify(hash, sign);
 	}
 
-	public static String getAddr(byte[] hash, String sign) {
+	public static String getAddress(byte[] hash, String sign) {
 		return Address.toChecksum(Address.from(hash,sign));
 	}
 

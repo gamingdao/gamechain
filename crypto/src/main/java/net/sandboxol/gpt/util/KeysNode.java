@@ -18,10 +18,11 @@ import org.bouncycastle.math.ec.ECConstants;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.math.ec.FixedPointCombMultiplier;
 
-public final class KeysInfo implements ECConstants,ECConstant {
-	private static final int STRENTH = CURVE.getN().bitLength()>>>2; // set 1/4; best is 1/3;
+public final class KeysNode implements ECConstants,ECConstant {
+	private static final int STRENTH = CURVE.getN().bitLength()>>>2; // set 1/4=0.25; best is 1/3=0.33 for hex; 2/5=0.4 for oct;
 	private static final ProviderConfiguration BCCONF = BouncyCastleProvider.CONFIGURATION;
-	private KeysInfo parent;
+	static boolean useOct = false;
+	private KeysNode parent;
 	private KeyPair keys;
 	private BigInteger pub;
 	private String name;
@@ -29,28 +30,28 @@ public final class KeysInfo implements ECConstants,ECConstant {
 				Security.addProvider(new BouncyCastleProvider());
 	}}
 
-	public KeysInfo(String name) {
+	public KeysNode(String name) {
 		this.name=name;
 		this.initialize();
 	}
 
-	public KeysInfo(String name, KeysInfo group) {
+	public KeysNode(String name, KeysNode group) {
 		this.name=name;
 		this.parent=group;
 		this.initialize();
 	}
 
-	public KeysInfo(String name, KeyPair keys) {
+	public KeysNode(String name, KeyPair keys) {
 		this.name=name;
 		this.keys=keys;
 	}
 
-	public KeysInfo getParent() {
+	public KeysNode getParent() {
 		return this.parent;
 	}
 	
-	public KeysInfo getChild(String child){
-		return new KeysInfo(child,this);
+	public KeysNode getChild(String child){
+		return new KeysNode(child,this);
 	}	
 	
 	public String getName() {
@@ -70,7 +71,8 @@ public final class KeysInfo implements ECConstants,ECConstant {
 	private void initialize() {
 		if(name==null||getPrivate()!=null){return;};
 		byte[] seed = (parent==null)?name.getBytes():parent.getPrivate().toByteArray();
-		this.keys = createKeys(generateKey(name,seed));
+		BigInteger priKey = useOct?generateOctKey(name,seed):generateKey(name,seed);
+		this.keys = createKeys(priKey);
 	}
 	
 	KeyPair getKeys() {
@@ -132,7 +134,7 @@ public final class KeysInfo implements ECConstants,ECConstant {
 	 * @return seed BigInteger as private seed 
 	 */
 	public static BigInteger generateKey(String name, byte[] seed){
-		//if(useOct){ return generateOctKey()}
+		if(useOct){ return generateOctKey(name,seed); }
 		byte[] salt = name.getBytes();
 		byte[] data = seed;
 		BigInteger N = CURVE.getN();
