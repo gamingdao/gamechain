@@ -24,8 +24,9 @@ public final class KeysNode implements ECConstants,ECConstant {
 	static boolean useOct = false;
 	private KeysNode parent;
 	private KeyPair keys;
-	private BigInteger pub;
 	private String name;
+	private byte[] pub;
+	
 	static{ if( Security.getProvider(BouncyCastleProvider.PROVIDER_NAME)==null ) {
 				Security.addProvider(new BouncyCastleProvider());
 	}}
@@ -33,6 +34,12 @@ public final class KeysNode implements ECConstants,ECConstant {
 	public KeysNode(String name) {
 		this.name=name;
 		this.initialize();
+	}
+
+	public KeysNode(String name, String priKey) {
+		if(name==null||priKey==null){return;};
+		BigInteger d = Numeric.toBigInt(priKey);
+		this.keys = createKeys(d);
 	}
 
 	public KeysNode(String name, KeysNode group) {
@@ -89,13 +96,15 @@ public final class KeysNode implements ECConstants,ECConstant {
 	/**
 	 * @return pubicPoint XY encoding without compressed
 	 */
-	public BigInteger getPublic() {
-		if(this.pub!=null) {return this.pub;}
+	public byte[] getPublic() {
+		if(this.pub!=null) {
+			return this.pub;
+		}
 		if(keys==null||keys.getPublic()==null){
 			return null;
 		}
-		byte[] encoded = ((BCECPublicKey)keys.getPublic()).getQ().getEncoded(false);
-		this.pub = new BigInteger(1, Arrays.copyOfRange(encoded, 1, encoded.length)); 
+		this.pub = ((BCECPublicKey)keys.getPublic()).getQ().getEncoded(false);
+		//this.pub = new BigInteger(1, Arrays.copyOfRange(encoded, 1, encoded.length)); 
 		return this.pub;
 	}
 	
@@ -227,7 +236,7 @@ public final class KeysNode implements ECConstants,ECConstant {
 	public String toString() {//avoid print private;
 		StringBuilder sb = new StringBuilder(); 
 		sb.append("ADDRESS:").append(Address.from(getPublic())).append(';');
-		sb.append("PUBKEY:").append(Numeric.toHexStringWithPrefixSafe(getPublic())).append(';');
+		sb.append("PUBKEY:").append(Numeric.toHexString(getPublic())).append(';');
 		sb.append("QName:").append(getQName()).append(';');
 		return sb.toString();
 	}	

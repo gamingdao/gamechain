@@ -197,7 +197,19 @@ public final class Numeric {
 		return result;
 	}
 
-	public static byte[] hexStringToByteArray(String input) {
+	public static byte[] toBytesPadded(String hexStr, int length) {	
+		byte[] bytes = hexStringToByteArray(hexStr);
+		if(bytes.length < length) {
+			byte[] result = new byte[length];
+			System.arraycopy(bytes, 0, result, length-bytes.length, bytes.length);
+			return result;
+		}
+		//else if(bytes.length>length) {//should error}
+
+		return bytes;
+	}
+	
+	public static byte[] hexStringToByteArray0(String input) {
 		String cleanInput = cleanHexPrefix(input);
 
 		int len = cleanInput.length();
@@ -221,6 +233,21 @@ public final class Numeric {
 			data[(i + 1) / 2] = (byte) ((Character.digit(cleanInput.charAt(i), 16) << 4) + Character.digit(cleanInput.charAt(i + 1), 16));
 		}
 		return data;
+	}
+	
+	/**
+	 * @param hexStr the hex String  with optional 0x prefix
+	 * @return the bytes
+	 */
+	public static byte[] hexStringToByteArray(String hexStr) {
+		String chs = cleanHexPrefix(hexStr);
+		int len = chs.length();
+		if (len == 0) {return new byte[]{};}
+		byte[] data = new byte[(len+1)/2];
+		for (int i = len&1; i < len; i += 2) {
+			data[(i+1)/2] = asByte(Character.digit(chs.charAt(i), 16),Character.digit(chs.charAt(i + 1), 16));
+		}
+		return data;		
 	}
 
 	public static String toHexString(byte[] input, int offset, int length, boolean withPrefix) {

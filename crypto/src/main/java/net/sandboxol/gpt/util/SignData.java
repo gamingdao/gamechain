@@ -138,7 +138,7 @@ public class SignData {
 	 * @return the public key used to sign the message
 	 * @throws RuntimeException If the public key could not be recovered or if there was a signature format error.
 	 */
-	public BigInteger recoverPublicKey() {
+	public byte[] getPublicKey() {
 		verifyPrecondition(r != null && r.length == 32, "r must be 32 bytes");
 		verifyPrecondition(s != null && s.length == 32, "s must be 32 bytes");
 		int header = getV() & 0xFF;

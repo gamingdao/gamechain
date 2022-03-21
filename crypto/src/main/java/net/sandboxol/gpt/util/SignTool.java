@@ -42,12 +42,16 @@ public class SignTool {
 	 * @param hash Hash of the data that was signed.
 	 * @return An ECKey containing only the public part, or null if recovery wasn't possible.
 	 */
-	public static BigInteger recoverPublicKeys(int recId, BigInteger sigR, BigInteger sigS, byte[] hash) {
+	public static byte[] recoverPublicKeys(int recId, BigInteger sigR, BigInteger sigS, byte[] hash) {
 		ECPoint q = recoverPublicPoint(recId, sigR, sigS, hash);
 		if(q==null) {return null;}
+		
+		return q.getEncoded(false);
+		/*		
 		byte[] qBytes = q.getEncoded(false);
 		// We remove the prefix
 		return new BigInteger(1, Arrays.copyOfRange(qBytes, 1, qBytes.length));
+		*/
 	}	
 
 	/**
@@ -143,21 +147,20 @@ public class SignTool {
 		
 	}
 
-	public static SignData createSignatureData(BigInteger sigR, BigInteger sigS, BigInteger publicKey, byte[] hash) {
+	public static SignData createSignatureData(BigInteger sigR, BigInteger sigS, byte[] pubKey, byte[] hash) {
 		// Now we have to work backwards to figure out the recId needed to recover the signature.
 		sigS = canonicalize(sigS);
 		int recId = -1;
-		for (int i = 0; i < 4; i++) {
-			BigInteger k = recoverPublicKeys(i, sigR, sigS, hash);
-			if (k != null && k.equals(publicKey)) {
+		if(pubKey!=null) for(int i=0; i<4; i++){
+			byte[] key = recoverPublicKeys(i, sigR, sigS, hash);
+			if(Arrays.equals(pubKey, key)) {
 				recId = i;
 				break;
 			}
 		}
 		if (recId == -1) {
-			throw new RuntimeException("Could not construct a recoverable key. Are your credentials valid?");
+			throw new RuntimeException("Could not construct a recoverable public key. Are your credentials valid?");
 		}
-
 		int header = recId + 27;
 		return new SignData((byte) header, sigR, sigS, hash);
 	}
@@ -178,13 +181,14 @@ public class SignTool {
 	 * SignTool a hash with the private key of this key pair.
 	 *
 	 * @param hash the hash data need to sign
+	 * @param kn keysNode with holder the public key
 	 * @return SignatureData with r,s,v
 	 */
-	public static SignData sign(byte[] hash, KeysNode ki) {
+	public static SignData sign(byte[] hash, KeysNode kn) {
 		ECDSASigner signer = new ECDSASigner(new HMacDSAKCalculator(new SHA256Digest()));
-		signer.init(true,  new ECPrivateKeyParameters(ki.getPrivate(),CURVE));		
+		signer.init(true,  new ECPrivateKeyParameters(kn.getPrivate(),CURVE));		
 		BigInteger[] sign = signer.generateSignature(hash);		
-		return createSignatureData(sign[0],sign[1], ki.getPublic(), hash);
+		return createSignatureData(sign[0],sign[1], kn.getPublic(), hash);
 	}
 	
 	

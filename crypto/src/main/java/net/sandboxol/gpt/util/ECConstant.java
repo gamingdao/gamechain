@@ -1,6 +1,16 @@
-/*
+package net.sandboxol.gpt.util;
+
+import java.math.BigInteger;
+
+import org.bouncycastle.asn1.x9.X9ECParameters;
+import org.bouncycastle.crypto.ec.CustomNamedCurves;
+import org.bouncycastle.crypto.params.ECDomainParameters;
+
+/**
 ECC: y^2=x^3+7 ;  y²=x³+7 Mod(P)
 ECC推荐参数：256k1
+{@link org.bouncycastle.math.ec.custom.sec.SecP256K1FieldElement#Q}
+{@link org.bouncycastle.math.ec.custom.sec.SecP256K1Field#P}
 p=FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F
 a=0000000000000000000000000000000000000000000000000000000000000000
 b=0000000000000000000000000000000000000000000000000000000000000007
@@ -9,6 +19,7 @@ G=79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798
 n=FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141
 
 ECC推荐参数：256r1
+{@link org.bouncycastle.math.ec.custom.sec.SecP256R1FieldElement#Q}
 p=FFFFFFFF00000001000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF
 a=FFFFFFFF00000001000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFC
 b=5AC635D8AA3A93E7B3EBBD55769886BC651D06B0CC53B0F63BCE3C3E27D2604B
@@ -25,13 +36,6 @@ G =(x,y); G的阶为n
 P = 2^256-2^32-977=2^256-2^32-2^10+2^5+2^4-1
     
  */
-package net.sandboxol.gpt.util;
-
-import java.math.BigInteger;
-
-import org.bouncycastle.asn1.x9.X9ECParameters;
-import org.bouncycastle.crypto.ec.CustomNamedCurves;
-import org.bouncycastle.crypto.params.ECDomainParameters;
 
 public interface ECConstant {
 	public static final int ADDRESS_BITS = 160;

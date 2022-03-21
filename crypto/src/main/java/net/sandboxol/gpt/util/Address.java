@@ -5,28 +5,48 @@ import java.util.Arrays;
 
 public class Address implements ECConstant {
 
-	public static String from(byte[] hash, String sign) {
-		return from(new SignData(hash,sign).recoverPublicKey());
+	/**
+	 * @param pKey the public key bytes
+	 * @return address from the public Key
+	 */
+	public static String from(byte[] pKey) {
+		if(pKey==null) {return null;}
+		byte[] keys = Arrays.copyOfRange(pKey,pKey.length-(PUBLIC_BITS>>3), pKey.length);
+		byte[] hash = Hash.sha3(keys);
+		byte[] addr = Arrays.copyOfRange(hash,hash.length-(ADDRESS_BITS>>3),hash.length); // right most 160 bits
+		return Numeric.toHexString(addr);
+	}
+
+	/**
+	 * @param publicKey string encoding
+	 * @return address from the publicKey
+	 */
+	public static String from(String publicKey) {
+		if(publicKey.length()<=(ADDRESS_BITS>>2)+2){	//the input is a address?
+			return publicKey;
+		}
+		byte[] bytes = Numeric.toBytesPadded(publicKey, PUBLIC_BITS>>3);
+		return from(bytes);
 	}
 	
+	/**
+	 * @param publicKey the public key
+	 * @return address from the public Key
+	 */
 	public static String from(BigInteger publicKey) {
 		if(publicKey==null) {return null;}
-		return from(Numeric.toHexStringNoPrefixZeroPadded(publicKey, PUBLIC_BITS>>2));
+		byte[] bytes = Numeric.toBytesPadded(publicKey, PUBLIC_BITS>>3);
+		//byte[] bytes = publicKey.toByteArray();
+		return from(bytes);
 	}
-
-	public static String from(String publicKey) {
-		String keyNoPrefix = Numeric.cleanHexPrefix(publicKey);
-		if (keyNoPrefix.length() < PUBLIC_BITS>>2) {
-			keyNoPrefix = Strings.zeros((PUBLIC_BITS>>2)-keyNoPrefix.length()) + keyNoPrefix;
-			//TODO check: need add prefix 0?
-		}
-		String hash = Hash.sha3(keyNoPrefix);
-		return HEX_PREFIX+hash.substring(hash.length() - (ADDRESS_BITS>>2)); // right most 160 bits
-	}
-
-	public static byte[] from(byte[] publicKey) {
-		byte[] hash = Hash.sha3(publicKey);
-		return Arrays.copyOfRange(hash, hash.length - (ADDRESS_BITS>>3), hash.length); // right most 160 bits
+	
+	/**
+	 * @param hash
+	 * @param sign
+	 * @return address recover the address from sign with the hash
+	 */
+	public static String from(byte[] hash, String sign) {
+		return from(new SignData(hash,sign).getPublicKey());
 	}
 
 	/**
@@ -37,16 +57,15 @@ public class Address implements ECConstant {
 	 * @return hex encoded checksum address
 	 */
 	public static String toChecksum(String address) {
-		String lowercaseAddress = Numeric.cleanHexPrefix(address).toLowerCase();
-		String addressHash = Numeric.cleanHexPrefix(Hash.sha3String(lowercaseAddress));
-		StringBuilder result = new StringBuilder(lowercaseAddress.length() + 2);
+		if(address==null) {return null;}
+		String lowercase = Numeric.cleanHexPrefix(address).toLowerCase();
+		String addrHash = Numeric.cleanHexPrefix(Hash.sha3String(lowercase));
+		StringBuilder result = new StringBuilder(lowercase.length() + 2);
 		result.append(HEX_PREFIX);
-		for (int i = 0; i < lowercaseAddress.length(); i++) {
-			if (Integer.parseInt(String.valueOf(addressHash.charAt(i)), 16) >= 8) {
-				result.append(String.valueOf(lowercaseAddress.charAt(i)).toUpperCase());
-			} else {
-				result.append(lowercaseAddress.charAt(i));
-			}
+		for (int i = 0; i < lowercase.length(); i++) {
+			char c = lowercase.charAt(i);
+			if(c>'9' && addrHash.charAt(i)>'7'){ c -= 32; }//need to UpperCase
+			result.append(c);
 		}
 		return result.toString();
 	}

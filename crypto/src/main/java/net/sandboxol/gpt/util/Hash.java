@@ -53,15 +53,14 @@ public class Hash {
 	}
 
 	/**
-	 * Keccak-256 hash function.
+	 * Keccak-256 hash function that operates on a UTF-8 encoded String.
 	 *
-	 * @param hexInput hex encoded input data with optional 0x prefix
+	 * @param utf8Str UTF-8 encoded string
 	 * @return hash value as hex encoded string
 	 */
-	public static String sha3(String hexInput) {
-		byte[] bytes = Numeric.hexStringToByteArray(hexInput);
-		byte[] result = sha3(bytes);
-		return Numeric.toHexString(result);
+	public static String sha3String(String utf8Str) {
+		byte[] bytes = utf8Str.getBytes(StandardCharsets.UTF_8);
+		return Numeric.toHexString(sha3(bytes));
 	}
 
 	/**
@@ -86,16 +85,6 @@ public class Hash {
 	 */
 	public static byte[] sha3(byte[] input) {
 		return sha3(input, 0, input.length);
-	}
-
-	/**
-	 * Keccak-256 hash function that operates on a UTF-8 encoded String.
-	 *
-	 * @param utf8String UTF-8 encoded string
-	 * @return hash value as hex encoded string
-	 */
-	public static String sha3String(String utf8String) {
-		return Numeric.toHexString(sha3(utf8String.getBytes(StandardCharsets.UTF_8)));
 	}
 
 	/**
@@ -143,9 +132,13 @@ public class Hash {
 
 	public static byte[] sha256hash160(byte[] input) {
 		byte[] sha256 = sha256(input);
+		return RIPEMD160(sha256);
+	}
+	
+	public static byte[] RIPEMD160(byte[] input) {
 		RIPEMD160Digest digest = new RIPEMD160Digest();
-		digest.update(sha256, 0, sha256.length);
-		byte[] out = new byte[20];
+		digest.update(input, 0, input.length);
+		byte[] out = new byte[digest.getDigestSize()]; //size=20
 		digest.doFinal(out, 0);
 		return out;
 	}

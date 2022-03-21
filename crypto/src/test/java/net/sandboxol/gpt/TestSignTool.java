@@ -1,10 +1,11 @@
-package net.sandboxol.gpt.util;
+package net.sandboxol.gpt;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import net.sandboxol.gpt.crypto.JsonTool;
 import net.sandboxol.gpt.crypto.KeysTool;
+import net.sandboxol.gpt.util.Numeric;
 
 public class TestSignTool {
 	

@@ -4,11 +4,12 @@ import java.math.BigInteger;
 
 import org.bouncycastle.math.ec.ECConstants;
 
-public class TestKeysInfo {
+public class TestKeysNode {
 
 
 	public static void main(String[] args) {
-		test1(true);
+		//test1(true);
+		test2();
 	}
 	
 	static void test1(boolean useOct) {
@@ -17,8 +18,8 @@ public class TestKeysInfo {
 		for(int j=0;j<100;j++) {
 			System.out.println(j+":"+System.currentTimeMillis()/1000);
 			KeysNode kh = root.getChild(Integer.toString(j));
-			for(int i=0;i<10_000_0;i++) {
-				print(kh.getChild(Integer.toString(i)),"0x0000");//"0x000000");
+			for(int i=0;i<1_000_000;i++) {
+				print(kh.getChild(Integer.toString(i)),"0x00000");//"0x000000");
 			}
 		}		
 	}
@@ -40,7 +41,7 @@ public class TestKeysInfo {
 		}
 		StringBuilder sb = new StringBuilder(); 
 		sb.append("ADDRESS:").append(addr).append(';');
-		sb.append("PUBKEY:").append(Numeric.toHexStringWithPrefixSafe(ki.getPublic())).append(';');
+		sb.append("PUBKEY:").append(Numeric.toHexString(ki.getPublic())).append(';');
 		sb.append("PRIKEY:").append(Numeric.toHexStringWithPrefixSafe(ki.getPrivate())).append(';');
 		sb.append("QName:").append(ki.getQName()).append(';');
 		sb.append(loopedTimes(ki));
