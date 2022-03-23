@@ -54,7 +54,7 @@ public class Address implements ECConstant {
 	 * "https://github.com/ethereum/EIPs/blob/master/EIPS/eip-55.md">EIP-55</a>.
 	 *
 	 * @param address a valid hex encoded address
-	 * @return hex encoded checksum address
+	 * @return hex encoded checksum address with hex prefix
 	 */
 	public static String toChecksum(String address) {
 		if(address==null) {return null;}

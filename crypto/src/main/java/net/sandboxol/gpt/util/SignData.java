@@ -65,10 +65,11 @@ public class SignData {
 	}
 	
 	public String getEncode() {
-		String str = Numeric.toHexStringNoPrefix(new byte[] {getV()});
-		str+= Numeric.toHexString(r,0,r.length,false);
-		str+= Numeric.toHexString(s,0,s.length,false);
-		return str;
+		StringBuilder sb = new StringBuilder(130);//2*(1+32+32)
+		sb.append(Numeric.toHexString(new byte[] {getV()}));
+		sb.append(Numeric.toHexString(r));
+		sb.append(Numeric.toHexString(s));
+		return sb.toString();
 	}
 	
 	static final String ETHER_MSG_PREFIX = "\u0019Ethereum Signed Message:\n";

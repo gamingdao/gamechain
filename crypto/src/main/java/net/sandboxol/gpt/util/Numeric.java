@@ -118,43 +118,40 @@ public final class Numeric {
 
 	public static BigInteger toBigInt(String hexValue) {
 		String cleanValue = cleanHexPrefix(hexValue);
-		return toBigIntNoPrefix(cleanValue);
-	}
-
-	public static BigInteger toBigIntNoPrefix(String hexValue) {
-		return new BigInteger(hexValue, 16);
+		return new BigInteger(cleanValue, 16);
 	}
 
 	public static String toHexStringWithPrefix(BigInteger value) {
 		return HEX_PREFIX + value.toString(16);
 	}
 
-	public static String toHexStringNoPrefix(BigInteger value) {
+	public static String toHexString(BigInteger value) {
 		return value.toString(16);
 	}
 
-	public static String toHexStringNoPrefix(byte[] input) {
-		return toHexString(input, 0, input.length, false);
+	public static String toHexString(byte[] bytes) {
+		return new String(toHexCharArray(bytes, 0, bytes.length, false));
 	}
-
-	public static String toHexStringWithPrefixZeroPadded(BigInteger value, int size) {
-		return toHexStringZeroPadded(value, size, true);
+	
+	public static String toHexWithPrefix(byte[] bytes) {
+		return new String(toHexCharArray(bytes, 0, bytes.length, true));
+	}
+	
+	public static String toHexString(byte[] input, int offset, int length, boolean withPrefix) {
+		final String output = new String(toHexCharArray(input, offset, length, withPrefix));
+		return withPrefix ? new StringBuilder(HEX_PREFIX).append(output).toString() : output;
 	}
 
 	public static String toHexStringWithPrefixSafe(BigInteger value) {
-		String result = toHexStringNoPrefix(value);
+		String result = toHexString(value);
 		if (result.length() < 2) {
 			result = Strings.zeros(1) + result;
 		}
 		return HEX_PREFIX + result;
 	}
 
-	public static String toHexStringNoPrefixZeroPadded(BigInteger value, int size) {
-		return toHexStringZeroPadded(value, size, false);
-	}
-
-	private static String toHexStringZeroPadded(BigInteger value, int size, boolean withPrefix) {
-		String result = toHexStringNoPrefix(value);
+	public static String toHexStringPadded(BigInteger value, int size, boolean withPrefix) {
+		String result = toHexString(value);
 
 		int length = result.length();
 		if (length > size) {
@@ -250,11 +247,6 @@ public final class Numeric {
 		return data;		
 	}
 
-	public static String toHexString(byte[] input, int offset, int length, boolean withPrefix) {
-		final String output = new String(toHexCharArray(input, offset, length, withPrefix));
-		return withPrefix ? new StringBuilder(HEX_PREFIX).append(output).toString() : output;
-	}
-
 	private static char[] toHexCharArray(byte[] input, int offset, int length, boolean withPrefix) {
 		final char[] output = new char[length << 1];
 		for (int i = offset, j = 0; i < length; i++, j++) {
@@ -263,10 +255,6 @@ public final class Numeric {
 			output[j] = HEX_CHAR_MAP[v & 0x0F];
 		}
 		return output;
-	}
-
-	public static String toHexString(byte[] input) {
-		return toHexString(input, 0, input.length, true);
 	}
 
 	public static byte asByte(int m, int n) {

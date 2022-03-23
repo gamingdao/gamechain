@@ -170,7 +170,7 @@ public class SignTool {
 	 *
 	 * @param data the data need to sign
 	 * @param needHash boolean true will Hash.sha3(data), false if the data NO need hash again
-	 * @return An BigInteger[r,s] of the hash
+	 * @return hex encoding(BigInteger[v,r,s]) of the hash
 	 */
 	public static String sign(KeysNode ki, byte[] data, boolean needHash) {
 		byte[] hash = needHash? Hash.sha3(data):data;

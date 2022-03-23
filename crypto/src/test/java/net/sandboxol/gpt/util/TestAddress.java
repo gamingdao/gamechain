@@ -6,14 +6,14 @@ public class TestAddress implements ECConstant{
 	public static void main(String[] args) {
 		test1();
 		test3Key2Addr();
-		//test4();
+		test4();
 	}
 	
 	static void test3Key2Addr() {
 		//https://xz.aliyun.com/t/2718
 		String d = "0x614f5e36cd55ddab0947d1723693fef5456e5bee24738ba90bd33c0c6e68e269";
 		String addr = Address.from(new KeysNode("test",d).getPublic());
-		System.out.println(addr);
+		System.out.println(Address.toChecksum(addr));
 	}
 	
 	static void test4() {

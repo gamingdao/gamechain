@@ -158,6 +158,11 @@ public final class KeysNode implements ECConstants,ECConstant {
 		return d;		
 	}
 	
+	/**
+	 * @param name
+	 * @param seed
+	 * @return privateKey using Octal, chars: 12395678
+	 */
 	public static BigInteger generateOctKey(String name, byte[] seed){
 		byte[] salt = name.getBytes();
 		byte[] data = seed;
@@ -235,8 +240,8 @@ public final class KeysNode implements ECConstants,ECConstant {
 	
 	public String toString() {//avoid print private;
 		StringBuilder sb = new StringBuilder(); 
-		sb.append("ADDRESS:").append(Address.from(getPublic())).append(';');
-		sb.append("PUBKEY:").append(Numeric.toHexString(getPublic())).append(';');
+		sb.append("ADDRESS:").append(Address.from(getPublic())).append(',');
+		sb.append("PUBKEY:").append(Numeric.toHexString(getPublic())).append(',');
 		sb.append("QName:").append(getQName()).append(';');
 		return sb.toString();
 	}	
