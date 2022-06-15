@@ -1,16 +1,18 @@
 package net.sandboxol.gpt;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 
 import org.web3j.crypto.ECDSASignature;
 import org.web3j.crypto.ECKeyPair;
 
+import com.hhoss.code.ecc.ECConstant;
 import com.hhoss.code.ecc.KeysNode;
 import com.hhoss.code.ecc.Numeric;
 import com.hhoss.code.ecc.SignData;
 import com.hhoss.code.ecc.SignUtil;
 
-public class Web3KeyPair extends ECKeyPair {
+public class Web3KeyPair extends ECKeyPair implements ECConstant {
   
   private KeysNode keysNode;
   
@@ -24,7 +26,8 @@ public class Web3KeyPair extends ECKeyPair {
     if(keysNode==null) {
       return super.getPublicKey();
     }else{
-      return Numeric.toBigInt(keysNode.getPublic());
+      byte[] pub = keysNode.getPublic();
+      return Numeric.toBigInt(Arrays.copyOfRange(pub,pub.length-(PUBLIC_BITS>>3), pub.length));
     }
   }
   
